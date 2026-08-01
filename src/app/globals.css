@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  デザイントークン
+  参照：前回設計書 ⑫デザインシステム／⑬カラーパレット／⑭タイポグラフィ
+        詳細設計書 1章 共通ルール（ダークモードはprefers-color-schemeに自動追従＋手動切替トグル）
+
+  実装方針：
+  - ダークモードは`prefers-color-scheme`をデフォルトとしつつ、`.dark`クラスによる手動上書きを
+    可能にするため、CSS変数（RGB成分）でセマンティックトークンを定義する。
+  - 手動切替トグルのUI自体はPhase 2 設定画面（1-14）のTaskで実装する（本Taskの範囲外）。
+  - 画面ごとの個別カラー指定を避け、以下のセマンティックトークンのみを参照する。
+*/
+
+:root {
+  /* ベース背景: System Gray 6相当 #F2F2F7 */
+  --color-background: 242 242 247;
+  --color-surface: 255 255 255;
+
+  /* テキスト（Apple Label相当） */
+  --color-label: 0 0 0;
+  --color-label-secondary: 60 60 67;
+
+  /* プライマリ: Blue #0A84FF系 */
+  --color-primary: 10 132 255;
+
+  /* 危険度カラー */
+  --color-risk-high: 255 59 48; /* Red #FF3B30 */
+  --color-risk-medium: 255 149 0; /* Orange #FF9500 */
+  --color-risk-low: 255 204 0; /* Yellow #FFCC00 */
+
+  /* 成功／完了: Green #34C759 */
+  --color-success: 52 199 89;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* ベース背景: dark #1C1C1E */
+    --color-background: 28 28 30;
+    --color-surface: 44 44 46;
+
+    --color-label: 255 255 255;
+    --color-label-secondary: 174 174 178;
+
+    /* 危険度・プライマリ・成功カラーはApple標準に倣いダークでも同一値を使用 */
+  }
+}
+
+/* 手動切替トグル用（Phase 2で導入、prefers-color-schemeより優先） */
+.dark {
+  --color-background: 28 28 30;
+  --color-surface: 44 44 46;
+  --color-label: 255 255 255;
+  --color-label-secondary: 174 174 178;
+}
+
+.light {
+  --color-background: 242 242 247;
+  --color-surface: 255 255 255;
+  --color-label: 0 0 0;
+  --color-label-secondary: 60 60 67;
+}
+

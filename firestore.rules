@@ -1,0 +1,79 @@
+rules_version = '2';
+
+/**
+ * Firestore Security Rules
+ * 参照：前回設計書 ㉒セキュリティ設計
+ *       詳細設計書 4章 認証・権限方針（Custom Token方式、問題⑤承認内容）
+ *       詳細設計書 8章 技術設計（案B：Firestoreへの直接アクセスは管理者のみ）
+ *
+ * 権限モデル：
+ * - 管理者はPIN認証成功後にFirebase Authenticationへ signInWithCustomToken でサインインする。
+ *   Custom TokenのuidはadminsコレクションのドキュメントIDと一致させる（4章 /api/admin/login レスポンス仕様）。
+ * - isAdmin() は admins/{request.auth.uid} の存在有無で判定する（adminsコレクション自体への
+ *   直接読み取りは許可しないが、Security Rules内部でのexists()評価はクライアント読み取りとは別扱いのため可能）。
+ *
+ * 案B（このプロジェクトで採用）：
+ * Firestoreへ直接アクセスできるのはFirebase Auth認証済みの管理者のみ。
+ * 訓練生（未認証）はマスタデータの読み取り・reportsの送信ともに、
+ * Admin SDKを使うAPI Route（GET /api/students, /api/tasks, /api/risk-items, POST /api/reports）
+ * 経由でのみFirestoreとやり取りする。そのためクライアントからの直接読み取りは
+ * 全コレクションでisAdmin()を要求し、公開読み取りは一切許可しない。
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // ---- マスタデータ：読み取り・書き込みともに管理者のみ（案B） ----
+    // 訓練生はGET /api/students・/api/tasks・/api/risk-items（Admin SDK使用）経由で取得する
+
+    match /years/{yearId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /students/{studentId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /riskItems/{riskItemId} {
+      allow read: if isAdmin();
+      // 3章 riskItemsスキーマ: システム項目（isSystemItem: true）は
+      // 管理者であっても名称編集・無効化不可（問題②反映）
+      allow create: if isAdmin();
+      allow update: if isAdmin() &&
+        resource.data.isSystemItem == false &&
+        request.resource.data.isSystemItem == false;
+      allow delete: if isAdmin() && resource.data.isSystemItem == false;
+    }
+
+    // ---- 記録データ本体：読み取りは管理者のみ、書き込みはAPI Route（Admin SDK）経由のみ ----
+
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      // 4章: 訓練生の入力は必ず POST /api/reports（Admin SDK使用）を経由させ、
+      // クライアントからの直接書き込みは常に拒否する
+      allow write: if false;
+    }
+
+    match /aiAnalyses/{analysisId} {
+      allow read: if isAdmin();
+      // 4章: 生成・編集・確定はすべて /api/ai/generate, /api/ai/analyses/:id
+      // （いずれもAdmin SDK使用）経由のみ
+      allow write: if false;
+    }
+
+    // ---- admins：クライアントからの読み書きは一切許可しない ----
+    // PIN検証・Custom Token発行は /api/admin/login（Admin SDK）のみが行う
+
+    match /admins/{adminId} {
+      allow read, write: if false;
+    }
+  }
+}
