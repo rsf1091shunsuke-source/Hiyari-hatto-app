@@ -41,16 +41,21 @@ function SettingsPageContent() {
       return;
     }
     setIsCreating(true);
-    const result = await createYear(newYearName, new Date(newYearStartDate));
-    setIsCreating(false);
-    if (isCreateYearError(result)) {
-      setNameError(result.errorMessage);
-      return;
+    try {
+      const result = await createYear(newYearName, new Date(newYearStartDate));
+      if (isCreateYearError(result)) {
+        setNameError(result.errorMessage);
+        return;
+      }
+      setNewYearName("");
+      setNewYearStartDate("");
+      setNameError(null);
+      showToast("年度を作成しました", "success");
+    } catch {
+      setNameError("年度の作成に失敗しました。時間をおいて再度お試しください");
+    } finally {
+      setIsCreating(false);
     }
-    setNewYearName("");
-    setNewYearStartDate("");
-    setNameError(null);
-    showToast("年度を作成しました", "success");
   };
 
   const handleSwitchYear = async (targetYearId: string) => {
