@@ -5,7 +5,12 @@
  * ログイン画面がyearId未指定でアクセスされた場合（ホーム画面追加アイコン経由等）に、
  * 現在isActive:trueの年度IDを自動解決するための公開API。
  * yearIdのみを返し、accessToken等の機密フィールドは含めない。
+ *
+ * 動的関数を使わないGETルートはNext.jsが静的最適化（ビルド時に1回だけ実行しキャッシュ）
+ * してしまうため、force-dynamicで毎リクエスト実行を強制する（実際に発生した不具合対応）。
  */
+
+export const dynamic = "force-dynamic";
 
 import { adminDb } from "@/lib/firebase-admin";
 import { apiError } from "@/lib/apiAuth";
