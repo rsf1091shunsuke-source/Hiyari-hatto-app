@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
  */
 
 import { useEffect, useRef, useState } from "react";
-import { onSnapshot, query, updateDoc, where, doc as firestoreDoc } from "firebase/firestore";
+import { onSnapshot, query, updateDoc, where, doc as firestoreDoc, writeBatch } from "firebase/firestore";
 import { AdminGuard } from "@/components/AdminGuard";
 import { AdminNav } from "@/components/AdminNav";
 import { PrimaryButton } from "@/components/PrimaryButton";
@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/Skeleton";
 import { useToast } from "@/components/Toast";
 import { useCurrentYear } from "@/lib/useCurrentYear";
 import { studentsCol, addNewDoc } from "@/lib/collections";
+import { db } from "@/lib/firebase-client";
 import { checkAttendanceNumberDuplicate } from "@/lib/validators";
 import { parseStudentsCsv, ParsedCsvRow } from "@/lib/csv";
 import { Student } from "@/types/firestore";
@@ -28,6 +29,11 @@ function StudentsPageContent() {
   const [manualNumber, setManualNumber] = useState("");
   const [manualGroup, setManualGroup] = useState("");
   const [manualError, setManualError] = useState<string | null>(null);
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
+  const [rangeGroup, setRangeGroup] = useState("");
+  const [rangeError, setRangeError] = useState<string | null>(null);
+  const [isRangeAdding, setIsRangeAdding] = useState(false);
   const [csvPreview, setCsvPreview] = useState<ParsedCsvRow[] | null>(null);
   const [csvWarnings, setCsvWarnings] = useState<string[]>([]);
   const [isImporting, setIsImporting] = useState(false);
@@ -74,6 +80,64 @@ function StudentsPageContent() {
       showToast("追加しました", "success");
     } catch {
       showToast("追加に失敗しました", "error");
+    }
+  };
+
+  const handleRangeAdd = async () => {
+    if (!year) return;
+    const start = Number(rangeStart);
+    const end = Number(rangeEnd);
+    if (!rangeStart || !rangeEnd || Number.isNaN(start) || Number.isNaN(end)) {
+      setRangeError("開始番号と終了番号を入力してください");
+      return;
+    }
+    if (start > end) {
+      setRangeError("開始番号は終了番号以下にしてください");
+      return;
+    }
+    if (end - start + 1 > 200) {
+      setRangeError("一度に登録できるのは200件までです");
+      return;
+    }
+    if (!rangeGroup.trim()) {
+      setRangeError("班名を入力してください");
+      return;
+    }
+    setIsRangeAdding(true);
+    try {
+      const existingNumbers = new Set(students.map((s) => s.attendanceNumber));
+      const batch = writeBatch(db);
+      let addedCount = 0;
+      for (let n = start; n <= end; n++) {
+        if (existingNumbers.has(n)) continue;
+        const ref = firestoreDoc(studentsCol);
+        batch.set(ref, {
+          id: "",
+          yearId: year.id,
+          attendanceNumber: n,
+          groupName: rangeGroup,
+          isActive: true,
+        });
+        addedCount++;
+      }
+      if (addedCount === 0) {
+        setRangeError("この範囲は既に全て登録済みです");
+        return;
+      }
+      await batch.commit();
+      setRangeStart("");
+      setRangeEnd("");
+      setRangeGroup("");
+      setRangeError(null);
+      const skipped = end - start + 1 - addedCount;
+      showToast(
+        `${addedCount}件登録しました${skipped > 0 ? `（${skipped}件は登録済みのためスキップ）` : ""}`,
+        skipped > 0 ? "info" : "success"
+      );
+    } catch {
+      setRangeError("登録に失敗しました");
+    } finally {
+      setIsRangeAdding(false);
     }
   };
 
@@ -156,6 +220,48 @@ function StudentsPageContent() {
             />
           </div>
         )}
+      </div>
+
+      <div className="mb-4 rounded-card border border-black/10 bg-surface p-4">
+        <h2 className="mb-2 text-sm font-semibold">出席番号を範囲で一括登録</h2>
+        <p className="mb-2 text-xs text-label-secondary">
+          例：1〜40番までを同じ班名で一度に登録できます
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="number"
+            placeholder="開始番号（例：1）"
+            value={rangeStart}
+            onChange={(e) => {
+              setRangeStart(e.target.value);
+              setRangeError(null);
+            }}
+            className="min-h-[44px] w-36 rounded-card border border-black/10 bg-surface px-3"
+          />
+          <span className="text-label-secondary">〜</span>
+          <input
+            type="number"
+            placeholder="終了番号（例：40）"
+            value={rangeEnd}
+            onChange={(e) => {
+              setRangeEnd(e.target.value);
+              setRangeError(null);
+            }}
+            className="min-h-[44px] w-36 rounded-card border border-black/10 bg-surface px-3"
+          />
+          <input
+            type="text"
+            placeholder="班名"
+            value={rangeGroup}
+            onChange={(e) => {
+              setRangeGroup(e.target.value);
+              setRangeError(null);
+            }}
+            className="min-h-[44px] w-32 rounded-card border border-black/10 bg-surface px-3"
+          />
+          <PrimaryButton label="一括登録" onPress={handleRangeAdd} isLoading={isRangeAdding} />
+        </div>
+        {rangeError && <p className="mt-2 text-sm text-risk-high">{rangeError}</p>}
       </div>
 
       <div className="mb-4 rounded-card border border-black/10 bg-surface p-4">
