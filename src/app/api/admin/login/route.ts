@@ -18,12 +18,12 @@ const attemptStore = new Map<string, { count: number; lockedUntil: number }>();
 export async function POST(req: NextRequest) {
   const { yearId, pin } = await req.json();
 
-  if (!yearId || !pin) {
-    return apiError("VALIDATION_ERROR", "yearIdとPINは必須です", 400);
+  if (!pin) {
+    return apiError("VALIDATION_ERROR", "PINは必須です", 400);
   }
 
   const ip = req.headers.get("x-forwarded-for") ?? "unknown";
-  const attemptKey = `${ip}:${yearId}`;
+  const attemptKey = `${ip}:${yearId ?? "any"}`;
   const attempt = attemptStore.get(attemptKey);
   if (attempt && attempt.lockedUntil > Date.now()) {
     return apiError(
@@ -33,10 +33,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const adminsSnapshot = await adminDb
-    .collection("admins")
-    .where("assignedYearIds", "array-contains", yearId)
-    .get();
+  // yearIdが指定されていればその年度の担当管理者に絞る。未指定（現行年度の自動解決に失敗した場合等）
+  // でもPIN自体で照合できるよう、admins全件からPIN一致を先に探す方式にする。
+  // これにより「現行年度（isActive）の特定」がFirestore側のデータ不整合等で揺れても、
+  // PINが正しい限りログインできる（年度データの状態に左右されない堅牢な認証）。
+  const adminsSnapshot = yearId
+    ? await adminDb.collection("admins").where("assignedYearIds", "array-contains", yearId).get()
+    : await adminDb.collection("admins").get();
 
   const matchedAdmin = adminsSnapshot.docs.find((doc) =>
     verifyPin(pin, doc.data().pinHash)
@@ -55,11 +58,24 @@ export async function POST(req: NextRequest) {
 
   attemptStore.delete(attemptKey);
 
+  // ログインに使うyearIdを解決：指定されたyearIdがこの管理者の担当年度なら維持し、
+  // なければ担当年度のうち現在isActive:trueのものを優先、それも無ければ担当年度の先頭を使う。
+  const assignedYearIds: string[] = matchedAdmin.data().assignedYearIds ?? [];
+  let resolvedYearId = yearId && assignedYearIds.includes(yearId) ? yearId : undefined;
+  if (!resolvedYearId && assignedYearIds.length > 0) {
+    const yearsSnapshot = await adminDb
+      .collection("years")
+      .where("__name__", "in", assignedYearIds.slice(0, 30))
+      .get();
+    const activeAmongAssigned = yearsSnapshot.docs.find((d) => d.data().isActive === true);
+    resolvedYearId = activeAmongAssigned?.id ?? assignedYearIds[0];
+  }
+
   const adminId = matchedAdmin.id;
   const customToken = await adminAuth.createCustomToken(adminId, { role: "admin" });
   const sessionValue = createSessionCookieValue(adminId);
 
-  const res = Response.json({ customToken, adminId });
+  const res = Response.json({ customToken, adminId, yearId: resolvedYearId });
   res.headers.set(
     "Set-Cookie",
     `${SESSION_COOKIE_NAME}=${sessionValue}; HttpOnly; Path=/; SameSite=Lax; Max-Age=86400${
