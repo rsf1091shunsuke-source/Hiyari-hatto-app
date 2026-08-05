@@ -30,3 +30,4 @@ Noto Sans JP は SIL Open Font License, Version 1.1（OFL）のもとで配布�
 ライセンス全文は `src/assets/fonts/OFL.txt` を参照してください。
 配布元：https://github.com/google/fonts/tree/main/ofl/notosansjp
 
+
