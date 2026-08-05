@@ -52,10 +52,6 @@ function AdminLoginContent() {
       setError(formatCheck.errorMessage!);
       return;
     }
-    if (!resolvedYearId) {
-      setError("QRコードを読み取るか、正しいログインURLでアクセスしてください");
-      return;
-    }
 
     setIsLoading(true);
     setError(null);
@@ -63,7 +59,7 @@ function AdminLoginContent() {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ yearId: resolvedYearId, pin }),
+        body: JSON.stringify({ yearId: resolvedYearId ?? undefined, pin }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -83,12 +79,6 @@ function AdminLoginContent() {
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
       <h1 className="text-lg font-semibold">管理者ログイン</h1>
 
-      {!isResolvingYear && !resolvedYearId && (
-        <p className="max-w-xs text-center text-sm text-label-secondary">
-          管理者用QRコードを読み取るか、管理者用ログインURLからアクセスしてください
-        </p>
-      )}
-
       <input
         type="password"
         inputMode="numeric"
@@ -100,7 +90,6 @@ function AdminLoginContent() {
         }}
         aria-label="PIN"
         placeholder="PIN（4〜6桁）"
-        disabled={isResolvingYear}
         className={[
           "min-h-[44px] w-48 rounded-card border bg-surface px-4 text-center text-lg tracking-widest",
           error ? "border-risk-high" : "border-black/10",
@@ -108,12 +97,7 @@ function AdminLoginContent() {
       />
       {error && <p className="text-sm text-risk-high">{error}</p>}
 
-      <PrimaryButton
-        label="ログイン"
-        onPress={handleLogin}
-        isLoading={isLoading}
-        isDisabled={isResolvingYear}
-      />
+      <PrimaryButton label="ログイン" onPress={handleLogin} isLoading={isLoading} />
     </div>
   );
 }
