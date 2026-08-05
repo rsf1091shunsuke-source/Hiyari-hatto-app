@@ -9,8 +9,8 @@ import { verifyPin } from "@/lib/pin";
 import { createSessionCookieValue, SESSION_COOKIE_NAME } from "@/lib/adminSession";
 import { apiError } from "@/lib/apiAuth";
 
-const MAX_ATTEMPTS = 3; // 1-6画面仕様: PIN 3回連続失敗で30秒ロック
-const LOCK_MS = 30000;
+const MAX_ATTEMPTS = 10; // 学校Wi-Fi等の共有IP環境で他利用者の誤入力により巻き込まれにくいよう緩和
+const LOCK_MS = 15000;
 
 // 簡易レート制限（インメモリ、単一インスタンス運用が前提。将来的な多重デプロイ時はストア外出しを検討）
 const attemptStore = new Map<string, { count: number; lockedUntil: number }>();
