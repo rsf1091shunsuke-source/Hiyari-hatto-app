@@ -9,7 +9,7 @@
  * accessTokenは訓練生入力画面用マスタデータ取得API（GET /api/students等）の検証に使用する。
  */
 
-import { doc, writeBatch, Timestamp } from "firebase/firestore";
+import { doc, writeBatch, Timestamp, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase-client";
 import { yearsCol, riskItemsCol } from "./collections";
 import { checkYearNameDuplicate } from "./validators";
@@ -58,7 +58,14 @@ export async function createYear(
     isSystemItem: true,
   };
 
+  // isActive:trueの年度が複数併存すると、現行年度の自動解決（/api/active-year等）が
+  // 不安定になり管理者ログイン等に支障が出るため、既存の有効年度は同一batchで無効化する
+  const activeYearsSnapshot = await getDocs(query(yearsCol, where("isActive", "==", true)));
+
   const batch = writeBatch(db);
+  activeYearsSnapshot.docs.forEach((d) => {
+    batch.update(d.ref, { isActive: false });
+  });
   batch.set(yearRef, yearData);
   batch.set(riskItemRef, systemRiskItemData);
   await batch.commit();
