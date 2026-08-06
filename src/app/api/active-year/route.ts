@@ -17,10 +17,11 @@ import { apiError } from "@/lib/apiAuth";
 
 export async function GET() {
   try {
+    // 「この年度に切替」が他年度のisActiveを必ずfalseにするため、通常isActive:trueは1件のみ。
+    // orderByを付けると複合索引が必要になり未作成だと失敗するため、単純な等価条件のみで取得する。
     const snapshot = await adminDb
       .collection("years")
       .where("isActive", "==", true)
-      .orderBy("startDate", "desc")
       .limit(1)
       .get();
 
