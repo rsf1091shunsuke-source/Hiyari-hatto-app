@@ -25,48 +25,53 @@ export async function POST(req: NextRequest) {
   const start = new Date(periodStart);
   const end = new Date(periodEnd);
 
-  const [reportsSnap, tasksSnap, riskItemsSnap] = await Promise.all([
-    adminDb
-      .collection("reports")
-      .where("yearId", "==", yearId)
-      .where("isDeleted", "==", false)
-      .where("createdAt", ">=", start)
-      .where("createdAt", "<=", end)
-      .orderBy("createdAt", "asc")
-      .get(),
-    adminDb.collection("tasks").where("yearId", "==", yearId).get(),
-    adminDb.collection("riskItems").where("yearId", "==", yearId).get(),
-  ]);
+  try {
+    const [reportsSnap, tasksSnap, riskItemsSnap] = await Promise.all([
+      adminDb
+        .collection("reports")
+        .where("yearId", "==", yearId)
+        .where("isDeleted", "==", false)
+        .where("createdAt", ">=", start)
+        .where("createdAt", "<=", end)
+        .orderBy("createdAt", "asc")
+        .get(),
+      adminDb.collection("tasks").where("yearId", "==", yearId).get(),
+      adminDb.collection("riskItems").where("yearId", "==", yearId).get(),
+    ]);
 
-  const taskNameMap = new Map(tasksSnap.docs.map((d) => [d.id, d.data().name as string]));
-  const riskItemNameMap = new Map(
-    riskItemsSnap.docs.map((d) => [d.id, d.data().name as string])
-  );
+    const taskNameMap = new Map(tasksSnap.docs.map((d) => [d.id, d.data().name as string]));
+    const riskItemNameMap = new Map(
+      riskItemsSnap.docs.map((d) => [d.id, d.data().name as string])
+    );
 
-  const rows: RawReportRow[] = reportsSnap.docs.map((d) => {
-    const r = d.data();
-    const taskName =
-      r.taskId === "other" ? r.taskOtherText ?? "その他" : taskNameMap.get(r.taskId) ?? "不明";
-    const riskItemNames = (r.riskItemIds as string[])
-      .map((id) => riskItemNameMap.get(id))
-      .filter((n): n is string => Boolean(n));
-    return {
-      dateTimeLabel: r.createdAt.toDate().toLocaleString("ja-JP"),
-      taskName,
-      riskItemNames,
-    };
-  });
+    const rows: RawReportRow[] = reportsSnap.docs.map((d) => {
+      const r = d.data();
+      const taskName =
+        r.taskId === "other" ? r.taskOtherText ?? "その他" : taskNameMap.get(r.taskId) ?? "不明";
+      const riskItemNames = (r.riskItemIds as string[])
+        .map((id) => riskItemNameMap.get(id))
+        .filter((n): n is string => Boolean(n));
+      return {
+        dateTimeLabel: r.createdAt.toDate().toLocaleString("ja-JP"),
+        taskName,
+        riskItemNames,
+      };
+    });
 
-  const pdfBytes = await generateRawReportsPdf({
-    periodLabel: `${start.toLocaleDateString("ja-JP")} 〜 ${end.toLocaleDateString("ja-JP")}`,
-    totalCount: rows.length,
-    rows,
-  });
+    const pdfBytes = await generateRawReportsPdf({
+      periodLabel: `${start.toLocaleDateString("ja-JP")} 〜 ${end.toLocaleDateString("ja-JP")}`,
+      totalCount: rows.length,
+      rows,
+    });
 
-  return new Response(Buffer.from(pdfBytes), {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="hiyari-hatto-list.pdf"`,
-    },
-  });
+    return new Response(Buffer.from(pdfBytes), {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="hiyari-hatto-list.pdf"`,
+      },
+    });
+  } catch (err) {
+    console.error("[/api/pdf/generate-raw] failed:", err);
+    return apiError("VALIDATION_ERROR", "PDF生成に失敗しました", 500);
+  }
 }
