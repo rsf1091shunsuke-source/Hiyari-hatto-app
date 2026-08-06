@@ -20,6 +20,7 @@ export async function GET() {
     const snapshot = await adminDb
       .collection("years")
       .where("isActive", "==", true)
+      .orderBy("startDate", "desc")
       .limit(1)
       .get();
 
