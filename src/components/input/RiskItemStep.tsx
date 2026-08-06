@@ -8,6 +8,7 @@
 import { useMemo, useState } from "react";
 import { Chip } from "@/components/SelectableCard";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import { RiskGauge } from "./RiskGauge";
 import { RiskItemMaster } from "./types";
 
 interface RiskItemStepProps {
@@ -69,9 +70,13 @@ export function RiskItemStep({
         戻る
       </button>
       <h1 className="mb-1 text-ios-title1">危険だったところを選んでください</h1>
-      <p className="mb-6 text-ios-subhead text-label-secondary">
+      <p className="mb-5 text-ios-subhead text-label-secondary">
         当てはまるものをすべて選んでください
       </p>
+
+      <RiskGauge
+        count={selectedIds.filter((id) => id !== systemItem?.id).length}
+      />
 
       <div className="flex flex-wrap gap-2.5">
         {primaryGroup.map((item) => (

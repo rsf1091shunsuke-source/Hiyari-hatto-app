@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { hapticSuccess } from "@/lib/haptics";
 
 const AUTO_RETURN_MS = 3000;
 
@@ -17,6 +18,7 @@ export function CompleteStep({ onDone }: CompleteStepProps) {
   const [secondsLeft, setSecondsLeft] = useState(3);
 
   useEffect(() => {
+    hapticSuccess();
     const interval = setInterval(() => {
       setSecondsLeft((s) => Math.max(0, s - 1));
     }, 1000);
@@ -32,19 +34,30 @@ export function CompleteStep({ onDone }: CompleteStepProps) {
       className="flex min-h-screen flex-col items-center justify-center gap-5 px-5"
       aria-live="polite"
     >
-      <div
-        className="flex h-20 w-20 animate-popIn items-center justify-center rounded-full bg-success shadow-button"
-        aria-hidden="true"
-      >
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M5 13l4 4L19 7"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+      <div className="relative flex h-20 w-20 items-center justify-center">
+        <span className="absolute inset-0 rounded-full bg-success/40 animate-ripple" aria-hidden="true" />
+        <span
+          className="absolute inset-0 rounded-full bg-success/40 animate-ripple"
+          style={{ animationDelay: "0.3s" }}
+          aria-hidden="true"
+        />
+        <div
+          className="relative flex h-20 w-20 animate-popIn items-center justify-center rounded-full bg-success shadow-button"
+          aria-hidden="true"
+        >
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M5 13l4 4L19 7"
+              stroke="white"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="40"
+              strokeDashoffset="40"
+              className="animate-drawCheck"
+            />
+          </svg>
+        </div>
       </div>
       <div className="text-center">
         <p className="text-ios-title2">お疲れ様でした</p>

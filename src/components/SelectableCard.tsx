@@ -9,6 +9,7 @@
  */
 
 import { ReactNode } from "react";
+import { hapticTap } from "@/lib/haptics";
 
 // SelectableCard / Chip 共通の基礎スタイル
 const selectableBaseClass = [
@@ -33,7 +34,10 @@ export function SelectableCard({
   return (
     <button
       type="button"
-      onClick={onToggle}
+      onClick={() => {
+        hapticTap();
+        onToggle();
+      }}
       aria-pressed={isSelected}
       aria-label={label}
       className={[
@@ -60,7 +64,10 @@ export function Chip({ label, isSelected, onToggle }: ChipProps) {
   return (
     <button
       type="button"
-      onClick={onToggle}
+      onClick={() => {
+        hapticTap();
+        onToggle();
+      }}
       aria-pressed={isSelected}
       aria-label={label}
       className={[
