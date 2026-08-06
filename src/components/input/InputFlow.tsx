@@ -55,6 +55,9 @@ export function InputFlow({ yearId, token }: InputFlowProps) {
           fetch(`/api/tasks?yearId=${yearId}&token=${token}`),
           fetch(`/api/risk-items?yearId=${yearId}&token=${token}`),
         ]);
+        if (!studentsRes.ok || !tasksRes.ok || !riskItemsRes.ok) {
+          throw new Error("マスタデータの取得に失敗しました");
+        }
         const studentsJson = await studentsRes.json();
         const tasksJson = await tasksRes.json();
         const riskItemsJson = await riskItemsRes.json();
