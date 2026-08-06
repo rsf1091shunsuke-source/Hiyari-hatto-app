@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 
 // 環境変数はVercelのプロジェクト設定 or .env.localに設定する
 const firebaseConfig = {
@@ -17,4 +17,15 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+
+// iOSのホーム画面追加アプリ（スタンドアロン表示）で、Firebase Authが
+// authDomain（別オリジン）との同期にIndexedDB経由のiframeハンドシェイクを使うことがあり、
+// これがSafariへの意図しない離脱を引き起こす場合がある。
+// localStorageベースの永続化に固定することでこれを避ける（実際に発生した不具合対応）。
+if (typeof window !== "undefined") {
+  setPersistence(auth, browserLocalPersistence).catch(() => {
+    // 永続化設定に失敗しても致命的ではないため、握りつぶして通常のログイン処理を継続する
+  });
+}
+
 export default app;
