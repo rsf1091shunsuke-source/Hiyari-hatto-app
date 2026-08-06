@@ -20,9 +20,9 @@ interface PrimaryButtonProps
 }
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-primary text-white",
-  destructive: "bg-risk-high text-white",
-  secondary: "bg-surface text-label border border-black/10",
+  primary: "bg-primary text-white shadow-button",
+  destructive: "bg-risk-high text-white shadow-button",
+  secondary: "bg-surface text-primary border border-black/[0.08]",
 };
 
 export function PrimaryButton({
@@ -43,16 +43,16 @@ export function PrimaryButton({
       aria-label={label}
       aria-busy={isLoading}
       className={[
-        "min-h-[44px] min-w-[44px] rounded-card px-5 font-sans font-semibold",
-        "transition-colors duration-150 active:scale-95",
+        "min-h-[50px] min-w-[44px] rounded-[14px] px-5 font-sans text-ios-headline",
+        "transition-all duration-150 ease-out active:scale-[0.97] active:brightness-95",
         variantClasses[variant],
-        disabled ? "opacity-50" : "",
+        disabled ? "pointer-events-none opacity-40 shadow-none" : "",
       ].join(" ")}
       {...rest}
     >
       {isLoading ? (
         <span
-          className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+          className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent align-[-3px]"
           aria-hidden="true"
         />
       ) : (

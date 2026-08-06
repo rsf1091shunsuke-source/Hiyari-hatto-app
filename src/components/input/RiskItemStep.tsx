@@ -56,18 +56,24 @@ export function RiskItemStep({
   };
 
   return (
-    <div className="px-4 py-4 pb-24">
+    <div className="px-5 py-6 pb-28">
       <button
         type="button"
         onClick={onBack}
         aria-label="戻る"
-        className="mb-4 min-h-[44px] text-primary"
+        className="mb-3 -ml-1 flex min-h-[44px] items-center gap-1 text-ios-body text-primary"
       >
-        ← 戻る
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none" aria-hidden="true">
+          <path d="M9 1L1.5 8.5L9 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        戻る
       </button>
-      <h1 className="mb-4 text-lg font-semibold">危険だったところを選んでください</h1>
+      <h1 className="mb-1 text-ios-title1">危険だったところを選んでください</h1>
+      <p className="mb-6 text-ios-subhead text-label-secondary">
+        当てはまるものをすべて選んでください
+      </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {primaryGroup.map((item) => (
           <Chip
             key={item.id}
@@ -80,10 +86,10 @@ export function RiskItemStep({
 
       {otherGroup.length > 0 && (
         <>
-          <h2 className="mb-2 mt-4 text-sm font-semibold text-label-secondary">
+          <h2 className="mb-3 mt-6 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
             その他の項目
           </h2>
-          <div className="flex flex-wrap gap-2 opacity-70">
+          <div className="flex flex-wrap gap-2.5 opacity-80">
             {otherGroup.map((item) => (
               <Chip
                 key={item.id}
@@ -97,7 +103,7 @@ export function RiskItemStep({
       )}
 
       {systemItem && (
-        <div className="mt-6">
+        <div className="mt-7 border-t border-black/[0.06] pt-5">
           <Chip
             label={systemItem.name}
             isSelected={selectedIds.includes(systemItem.id)}
@@ -106,9 +112,9 @@ export function RiskItemStep({
         </div>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 flex items-center justify-between bg-surface px-4 py-3 shadow-card-elevated">
-        <span className="text-sm text-label-secondary">
-          {selectedIds.length}件選択中
+      <div className="fixed inset-x-0 bottom-0 flex items-center justify-between border-t border-black/[0.06] bg-surface/90 px-5 py-3.5 backdrop-blur-glass [padding-bottom:max(0.875rem,env(safe-area-inset-bottom))]">
+        <span className="text-ios-subhead text-label-secondary">
+          {selectedIds.length > 0 ? `${selectedIds.length}件選択中` : "1件以上選んでください"}
         </span>
         <PrimaryButton
           label="次へ"

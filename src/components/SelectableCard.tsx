@@ -12,8 +12,8 @@ import { ReactNode } from "react";
 
 // SelectableCard / Chip 共通の基礎スタイル
 const selectableBaseClass = [
-  "min-h-[44px] min-w-[44px] rounded-card font-sans",
-  "transition-all duration-150 active:scale-95",
+  "min-h-[44px] min-w-[44px] rounded-[14px] font-sans text-ios-body",
+  "transition-all duration-150 ease-out active:scale-[0.96]",
   "border",
 ].join(" ");
 
@@ -40,8 +40,8 @@ export function SelectableCard({
         selectableBaseClass,
         "flex flex-col items-center justify-center gap-1 px-4 py-4",
         isSelected
-          ? "border-primary bg-primary/10 text-primary"
-          : "border-black/10 bg-surface text-label",
+          ? "border-primary bg-primary text-white shadow-button"
+          : "border-black/[0.06] bg-surface text-label shadow-card",
       ].join(" ")}
     >
       <span>{label}</span>
@@ -65,12 +65,23 @@ export function Chip({ label, isSelected, onToggle }: ChipProps) {
       aria-label={label}
       className={[
         selectableBaseClass,
-        "px-4 py-2 text-sm",
+        "flex items-center gap-1.5 px-4 py-2.5 text-ios-subhead",
         isSelected
-          ? "border-primary bg-primary text-white"
-          : "border-black/10 bg-surface text-label",
+          ? "border-primary bg-primary text-white shadow-button"
+          : "border-black/[0.06] bg-surface text-label",
       ].join(" ")}
     >
+      {isSelected && (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M5 13l4 4L19 7"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
       {label}
     </button>
   );

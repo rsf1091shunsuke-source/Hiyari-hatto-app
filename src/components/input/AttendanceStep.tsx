@@ -20,14 +20,17 @@ export function AttendanceStep({ students, onSelect }: AttendanceStepProps) {
   }, {});
 
   return (
-    <div className="px-4 py-4">
-      <h1 className="mb-4 text-lg font-semibold">出席番号を選んでください</h1>
+    <div className="px-5 py-6">
+      <h1 className="mb-1 text-ios-title1">出席番号を選んでください</h1>
+      <p className="mb-6 text-ios-subhead text-label-secondary">
+        自分の番号をタップして進みます
+      </p>
       {Object.entries(grouped).map(([groupName, groupStudents]) => (
-        <div key={groupName} className="mb-6">
-          <h2 className="mb-2 text-sm font-semibold text-label-secondary">
+        <div key={groupName} className="mb-7">
+          <h2 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
             {groupName}
           </h2>
-          <div className="grid grid-cols-8 gap-2 sm:grid-cols-10">
+          <div className="grid grid-cols-5 gap-3 sm:grid-cols-8">
             {groupStudents
               .sort((a, b) => a.attendanceNumber - b.attendanceNumber)
               .map((s) => (
@@ -36,7 +39,7 @@ export function AttendanceStep({ students, onSelect }: AttendanceStepProps) {
                   type="button"
                   onClick={() => onSelect(s)}
                   aria-label={`出席番号 ${s.attendanceNumber}番`}
-                  className="min-h-[44px] min-w-[44px] rounded-card border border-black/10 bg-surface text-label transition-transform duration-150 active:scale-95"
+                  className="aspect-square min-h-[44px] min-w-[44px] rounded-full bg-surface text-ios-headline text-label shadow-card transition-all duration-150 ease-out active:scale-90 active:bg-primary active:text-white active:shadow-button"
                 >
                   {s.attendanceNumber}
                 </button>
@@ -45,9 +48,13 @@ export function AttendanceStep({ students, onSelect }: AttendanceStepProps) {
         </div>
       ))}
       {students.length === 0 && (
-        <p className="text-sm text-label-secondary">
-          出席番号が登録されていません。管理者に登録を依頼してください。
-        </p>
+        <div className="rounded-[18px] bg-surface px-5 py-8 text-center shadow-card">
+          <p className="text-ios-body text-label-secondary">
+            出席番号が登録されていません。
+            <br />
+            管理者に登録を依頼してください。
+          </p>
+        </div>
       )}
     </div>
   );

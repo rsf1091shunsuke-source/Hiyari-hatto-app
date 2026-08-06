@@ -126,59 +126,75 @@ function DashboardContent() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 p-4 md:grid-cols-3">
-      <StatCard value={`${Math.round(stats.inputRate * 100)}%`} label="今日の入力率" />
-      <StatCard value={stats.todayCount} label="今日の件数" />
-      <StatCard value={stats.weekCount} label="今週件数" />
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <h1 className="mb-5 text-ios-title1">ダッシュボード</h1>
+
+      <div className="mb-3 grid grid-cols-3 gap-3">
+        <StatCard
+          value={`${Math.round(stats.inputRate * 100)}%`}
+          label="今日の入力率"
+          accent={stats.inputRate >= 0.8 ? "success" : "primary"}
+        />
+        <StatCard value={stats.todayCount} label="今日の件数" />
+        <StatCard value={stats.weekCount} label="今週の件数" />
+      </div>
 
       {stats.newlyAppeared.length > 0 && (
-        <div className="col-span-2 rounded-card border border-risk-high bg-risk-high/10 p-4 shadow-card md:col-span-3">
-          <p className="text-sm font-semibold text-risk-high">新しく出現した危険項目</p>
-          <p className="text-sm">
+        <div className="mb-3 rounded-[18px] bg-risk-high/10 p-4 shadow-card">
+          <p className="mb-1 flex items-center gap-1.5 text-ios-footnote font-semibold uppercase tracking-wide text-risk-high">
+            <span className="h-1.5 w-1.5 rounded-full bg-risk-high" aria-hidden="true" />
+            新しく出現した危険項目
+          </p>
+          <p className="text-ios-body text-label">
             {stats.newlyAppeared.map((i) => i?.name).join("、")}
           </p>
         </div>
       )}
 
-      <div className="col-span-2 md:col-span-3">
+      <div className="mb-3">
         <RankingCard title="危険項目ランキング（直近7日）" items={stats.riskItemRanking} />
       </div>
-      <div className="col-span-2 md:col-span-3">
+      <div className="mb-3">
         <RankingCard title="作業ランキング（直近7日）" items={stats.taskRanking} />
       </div>
 
-      <div className="col-span-2 rounded-card border border-black/10 bg-surface p-4 shadow-card md:col-span-3">
-        <h3 className="mb-2 text-sm font-semibold text-label-secondary">
+      <div className="mb-3 rounded-[18px] bg-surface p-5 shadow-card">
+        <h3 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
           直近7日推移
         </h3>
         <TrendLineChart data={stats.trend} />
       </div>
 
-      <div className="col-span-2 rounded-card border border-black/10 bg-surface p-4 shadow-card md:col-span-3">
-        <h3 className="mb-2 text-sm font-semibold text-label-secondary">
-          未入力者（{stats.unsubmittedStudents.length}名）
+      <div className="mb-5 rounded-[18px] bg-surface p-5 shadow-card">
+        <h3 className="mb-3 flex items-center justify-between text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          <span>未入力者</span>
+          <span className="normal-case tracking-normal text-label-secondary">
+            {stats.unsubmittedStudents.length}名
+          </span>
         </h3>
         {stats.unsubmittedStudents.length === 0 ? (
-          <p className="text-sm text-label-secondary">全員入力済みです</p>
+          <p className="text-ios-subhead text-success">全員入力済みです</p>
         ) : (
-          <p className="text-sm">
+          <p className="text-ios-body text-label">
             {stats.unsubmittedStudents.map((s) => s.attendanceNumber).join("、")}
           </p>
         )}
       </div>
 
-      <Link
-        href="/admin/ai-analysis"
-        className="col-span-1 rounded-card bg-primary px-4 py-3 text-center text-white"
-      >
-        AI分析を見る
-      </Link>
-      <Link
-        href="/admin/pdf"
-        className="col-span-1 rounded-card border border-black/10 bg-surface px-4 py-3 text-center text-label"
-      >
-        PDF出力
-      </Link>
+      <div className="grid grid-cols-2 gap-3">
+        <Link
+          href="/admin/ai-analysis"
+          className="rounded-[14px] bg-primary px-4 py-3.5 text-center text-ios-headline text-white shadow-button transition-transform duration-150 active:scale-[0.97]"
+        >
+          AI分析を見る
+        </Link>
+        <Link
+          href="/admin/pdf"
+          className="rounded-[14px] bg-surface px-4 py-3.5 text-center text-ios-headline text-primary shadow-card transition-transform duration-150 active:scale-[0.97]"
+        >
+          PDF出力
+        </Link>
+      </div>
     </div>
   );
 }
