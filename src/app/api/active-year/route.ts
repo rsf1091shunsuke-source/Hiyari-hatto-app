@@ -30,7 +30,8 @@ export async function GET() {
     }
 
     return Response.json({ yearId: snapshot.docs[0].id });
-  } catch {
+  } catch (err) {
+    console.error("[/api/active-year] failed:", err);
     return apiError("VALIDATION_ERROR", "年度情報の取得に失敗しました", 500);
   }
 }

@@ -37,7 +37,8 @@ export async function GET(req: NextRequest) {
         periodEnd
       );
       results.push({ yearId: yearDoc.id, analysisId, status: "success" });
-    } catch {
+    } catch (err) {
+    console.error("[/api/cron/generate-daily] failed:", err);
       results.push({ yearId: yearDoc.id, status: "failed" });
     }
   }

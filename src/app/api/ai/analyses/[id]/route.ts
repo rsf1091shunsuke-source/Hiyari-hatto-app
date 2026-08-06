@@ -21,7 +21,8 @@ export async function PATCH(
   let body: { contents?: Record<string, string>; confirm?: boolean };
   try {
     body = await req.json();
-  } catch {
+  } catch (err) {
+    console.error("[/api/ai/analyses/[id]] failed:", err);
     return apiError("VALIDATION_ERROR", "リクエスト形式が不正です", 400);
   }
   const { contents, confirm } = body;
@@ -61,7 +62,8 @@ export async function PATCH(
     await ref.update(update);
     const updatedSnap = await ref.get();
     return Response.json({ id: ref.id, ...updatedSnap.data() });
-  } catch {
+  } catch (err) {
+    console.error("[/api/ai/analyses/[id]] failed:", err);
     return apiError("VALIDATION_ERROR", "保存に失敗しました", 500);
   }
 }

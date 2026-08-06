@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
       contents,
       generatedAt: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
+    console.error("[/api/ai/generate] failed:", err);
     return apiError(
       "AI_GENERATION_FAILED",
       "分析の生成に失敗しました。時間をおいて再試行してください。",

@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
   let body: ReportsRequestBody;
   try {
     body = await req.json();
-  } catch {
+  } catch (err) {
+    console.error("[/api/reports] failed:", err);
     return apiError("VALIDATION_ERROR", "リクエスト形式が不正です", 400);
   }
 
@@ -82,7 +83,8 @@ export async function POST(req: NextRequest) {
     });
 
     return Response.json({ id: reportRef.id }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[/api/reports] failed:", err);
     return apiError("VALIDATION_ERROR", "送信に失敗しました", 500);
   }
 }
