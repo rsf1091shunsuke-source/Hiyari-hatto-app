@@ -143,7 +143,7 @@ function StatsContent() {
   }, [reports, tasks, riskItems, periodType, selectedMonthIndex, selectedYear]);
 
   if (!selectedYear) {
-    return <p className="p-4 text-label-secondary">年度が設定されていません</p>;
+    return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
   if (isLoading) {
     return (
@@ -154,16 +154,18 @@ function StatsContent() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="mb-4 text-lg font-semibold">統計・分析</h1>
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <h1 className="mb-5 text-ios-title1">統計・分析</h1>
 
       {years.length > 1 && (
-        <div className="mb-3">
-          <label className="mb-1 block text-xs text-label-secondary">対象年度</label>
+        <div className="mb-4">
+          <label className="mb-1.5 block text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+            対象年度
+          </label>
           <select
             value={selectedYear.id}
             onChange={(e) => setSelectedYearId(e.target.value)}
-            className="min-h-[44px] rounded-card border border-black/10 bg-surface px-3 text-sm"
+            className="min-h-[46px] w-full rounded-[12px] border border-transparent bg-surface px-4 text-ios-body text-label shadow-card outline-none"
           >
             {years.map((y) => (
               <option key={y.id} value={y.id}>
@@ -174,17 +176,17 @@ function StatsContent() {
         </div>
       )}
 
-      <div className="mb-3 flex flex-wrap gap-2">
+      <div className="mb-4 flex gap-1 rounded-[12px] bg-black/[0.05] p-1">
         {(Object.keys(PERIOD_LABELS) as PeriodType[]).map((p) => (
           <button
             key={p}
             type="button"
             onClick={() => setPeriodType(p)}
             className={[
-              "min-h-[44px] rounded-card border px-3 py-2 text-sm",
+              "min-h-[36px] flex-1 rounded-[9px] text-ios-footnote font-medium transition-all duration-150",
               periodType === p
-                ? "border-primary bg-primary text-white"
-                : "border-black/10 bg-surface text-label",
+                ? "bg-surface text-label shadow-card"
+                : "text-label-secondary",
             ].join(" ")}
           >
             {PERIOD_LABELS[p]}
@@ -194,11 +196,13 @@ function StatsContent() {
 
       {periodType === "monthly" && (
         <div className="mb-4">
-          <label className="mb-1 block text-xs text-label-secondary">対象月</label>
+          <label className="mb-1.5 block text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+            対象月
+          </label>
           <select
             value={selectedMonthIndex}
             onChange={(e) => setSelectedMonthIndex(Number(e.target.value))}
-            className="min-h-[44px] rounded-card border border-black/10 bg-surface px-3 text-sm"
+            className="min-h-[46px] w-full rounded-[12px] border border-transparent bg-surface px-4 text-ios-body text-label shadow-card outline-none"
           >
             {monthOptions.map((m, i) => (
               <option key={i} value={i}>
@@ -209,30 +213,32 @@ function StatsContent() {
         </div>
       )}
 
-      <p className="mb-4 text-sm text-label-secondary">
-        該当期間の件数：{data.filteredCount}件
+      <p className="mb-4 text-ios-subhead text-label-secondary">
+        該当期間の件数：<span className="font-semibold text-label">{data.filteredCount}件</span>
       </p>
 
       {data.filteredCount === 0 ? (
-        <p className="text-label-secondary">この期間の記録はありません</p>
+        <div className="rounded-[18px] bg-surface px-5 py-8 text-center shadow-card">
+          <p className="text-ios-body text-label-secondary">この期間の記録はありません</p>
+        </div>
       ) : (
         <>
-          <div className="mb-6 rounded-card border border-black/10 bg-surface p-4 shadow-card">
-            <h3 className="mb-2 text-sm font-semibold text-label-secondary">推移</h3>
+          <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+            <h3 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">推移</h3>
             <TrendBarChart data={data.trend} />
           </div>
 
           {data.ranking.length > 0 && (
-            <div className="mb-6 rounded-card border border-black/10 bg-surface p-4 shadow-card">
-              <h3 className="mb-2 text-sm font-semibold text-label-secondary">
+            <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+              <h3 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
                 危険行為ランキング
               </h3>
               <TrendBarChart data={data.ranking} />
             </div>
           )}
 
-          <div className="rounded-card border border-black/10 bg-surface p-4 shadow-card">
-            <h3 className="mb-2 text-sm font-semibold text-label-secondary">
+          <div className="rounded-[18px] bg-surface p-5 shadow-card">
+            <h3 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
               作業内容×危険項目 クロス集計
             </h3>
             <Heatmap

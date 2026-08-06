@@ -108,7 +108,7 @@ function AIAnalysisContent() {
   };
 
   if (!year) {
-    return <p className="p-4 text-label-secondary">年度が設定されていません</p>;
+    return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
   if (isLoading) {
     return (
@@ -120,32 +120,43 @@ function AIAnalysisContent() {
   }
 
   return (
-    <div className="p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-lg font-semibold">AI分析</h1>
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <h1 className="text-ios-title1">AI分析</h1>
         <PrimaryButton
-          label="AI分析を生成"
+          label="生成"
           onPress={handleGenerate}
           isLoading={isGenerating}
         />
       </div>
 
       {!latest ? (
-        <p className="text-label-secondary">まだAI分析が生成されていません</p>
+        <div className="rounded-[18px] bg-surface px-5 py-8 text-center shadow-card">
+          <p className="text-ios-body text-label-secondary">まだAI分析が生成されていません</p>
+        </div>
       ) : (
         <>
-          <p className="mb-4 text-sm text-label-secondary">
-            状態：{latest.status === "confirmed" ? "確定済み" : "下書き"}
-          </p>
-          <div className="space-y-4">
+          <div className="mb-4 flex items-center gap-2">
+            <span
+              className={[
+                "rounded-full px-2.5 py-0.5 text-ios-caption font-semibold",
+                latest.status === "confirmed"
+                  ? "bg-success/15 text-success"
+                  : "bg-risk-medium/15 text-risk-medium",
+              ].join(" ")}
+            >
+              {latest.status === "confirmed" ? "確定済み" : "下書き"}
+            </span>
+          </div>
+          <div className="space-y-3">
             {draftContents &&
               (Object.keys(CATEGORY_LABELS) as (keyof AIAnalysisContents)[]).map(
                 (key) => (
                   <div
                     key={key}
-                    className="rounded-card border border-black/10 bg-surface p-4 shadow-card"
+                    className="rounded-[18px] bg-surface p-5 shadow-card"
                   >
-                    <h3 className="mb-2 text-sm font-semibold text-label-secondary">
+                    <h3 className="mb-2.5 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
                       {CATEGORY_LABELS[key]}
                     </h3>
                     <textarea
@@ -157,7 +168,7 @@ function AIAnalysisContent() {
                         )
                       }
                       rows={3}
-                      className="w-full rounded-card border border-black/10 bg-background px-3 py-2 text-sm disabled:opacity-60"
+                      className="w-full resize-none rounded-[12px] border border-black/[0.06] bg-background px-3.5 py-2.5 text-ios-body text-label outline-none focus:border-primary disabled:opacity-60"
                     />
                   </div>
                 )
@@ -165,7 +176,7 @@ function AIAnalysisContent() {
           </div>
 
           {latest.status !== "confirmed" && (
-            <div className="mt-4 flex gap-2">
+            <div className="mt-5 flex gap-2.5">
               <PrimaryButton
                 label="下書き保存"
                 onPress={() => handleSave(false)}

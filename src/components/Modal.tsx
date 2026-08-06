@@ -66,8 +66,8 @@ export function Modal({ title, children, onClose, isOpen }: ModalProps) {
           "animate-[fadeIn_0.2s_ease-out]",
         ].join(" ")}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-ios-title3">{title}</h2>
           <button
             type="button"
             onClick={onClose}

@@ -109,15 +109,17 @@ function MonthlyReportContent() {
   };
 
   if (!year) {
-    return <p className="p-4 text-label-secondary">年度が設定されていません</p>;
+    return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
 
   return (
-    <div className="p-4">
-      <h1 className="mb-4 text-lg font-semibold">月次報告書作成</h1>
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <h1 className="mb-5 text-ios-title1">月次報告書作成</h1>
 
-      <div className="mb-4">
-        <label className="mb-1 block text-xs text-label-secondary">対象月</label>
+      <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+        <label className="mb-1.5 block text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          対象月
+        </label>
         <input
           type="month"
           value={monthValue}
@@ -125,40 +127,48 @@ function MonthlyReportContent() {
             setMonthValue(e.target.value);
             setSelectedIds([]);
           }}
-          className="min-h-[44px] rounded-card border border-black/10 bg-surface px-3"
+          className="min-h-[46px] rounded-[12px] border border-transparent bg-background px-4 text-ios-body text-label outline-none focus:border-primary"
         />
+        <p className="mt-3 text-ios-footnote text-label-secondary">
+          表（日付×作業内容×危険項目の件数集計）はこの期間の記録から自動作成されます
+        </p>
       </div>
 
-      <p className="mb-2 text-sm text-label-secondary">
-        表（日付×作業内容×危険項目の件数集計）はこの期間の記録から自動作成されます。
-      </p>
-
-      <div className="mb-6 rounded-card border border-black/10 bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold">
-          今月のヒヤリハットに載せる記録を選ぶ（{candidates.length}件中{selectedIds.length}件選択）
+      <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+        <h2 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          今月のヒヤリハットに載せる記録を選ぶ
+          <span className="ml-1.5 normal-case tracking-normal text-label-secondary/70">
+            （{candidates.length}件中{selectedIds.length}件選択）
+          </span>
         </h2>
         {candidates.length === 0 ? (
-          <p className="text-sm text-label-secondary">この月に自由記述のある記録はありません</p>
+          <p className="text-ios-subhead text-label-secondary">この月に自由記述のある記録はありません</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {candidates.map((r) => {
               const taskName =
                 r.taskId === "other" ? r.taskOtherText ?? "その他" : taskNameMap.get(r.taskId) ?? "不明";
               const isSelected = selectedIds.includes(r.id);
               return (
-                <div key={r.id} className="rounded-card border border-black/10 p-3">
-                  <label className="flex items-start gap-2">
+                <div
+                  key={r.id}
+                  className={[
+                    "rounded-[14px] p-3.5 transition-colors duration-150",
+                    isSelected ? "bg-primary/[0.06]" : "bg-background",
+                  ].join(" ")}
+                >
+                  <label className="flex cursor-pointer items-start gap-2.5">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelect(r.id)}
-                      className="mt-1 h-5 w-5"
+                      className="mt-1 h-5 w-5 accent-primary"
                     />
                     <div className="flex-1">
-                      <p className="text-xs text-label-secondary">
+                      <p className="text-ios-caption text-label-secondary">
                         {r.createdAt.toDate().toLocaleDateString("ja-JP")}　{taskName}
                       </p>
-                      <p className="text-sm">{r.freeText}</p>
+                      <p className="text-ios-subhead text-label">{r.freeText}</p>
                     </div>
                   </label>
                   {isSelected && (
@@ -168,7 +178,7 @@ function MonthlyReportContent() {
                       onChange={(e) =>
                         setCountermeasureMap((prev) => ({ ...prev, [r.id]: e.target.value }))
                       }
-                      className="mt-2 min-h-[60px] w-full rounded-card border border-black/10 bg-surface px-3 py-2 text-sm"
+                      className="mt-2.5 min-h-[60px] w-full resize-none rounded-[12px] border border-black/[0.06] bg-surface px-3.5 py-2.5 text-ios-subhead text-label outline-none focus:border-primary"
                     />
                   )}
                 </div>
@@ -185,16 +195,16 @@ function MonthlyReportContent() {
       />
 
       {pdfUrl && (
-        <div className="mt-4">
+        <div className="mt-4 animate-fadeIn">
           <iframe
             src={pdfUrl}
-            className="h-[70vh] w-full rounded-card border border-black/10 bg-white"
+            className="h-[70vh] w-full rounded-[14px] bg-white shadow-card"
             title="月次報告書PDFプレビュー"
           />
           <a
             href={pdfUrl}
             download="monthly-report.pdf"
-            className="mt-2 inline-block min-h-[44px] rounded-card bg-primary px-4 py-2 text-white"
+            className="mt-3 inline-flex min-h-[44px] items-center rounded-[14px] bg-primary px-5 text-ios-headline text-white shadow-button"
           >
             ダウンロード
           </a>

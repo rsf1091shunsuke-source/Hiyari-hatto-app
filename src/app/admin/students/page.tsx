@@ -185,32 +185,34 @@ function StudentsPageContent() {
   };
 
   if (!year) {
-    return <p className="p-4 text-label-secondary">年度が設定されていません</p>;
+    return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
 
   return (
-    <div className="p-4">
-      <h1 className="mb-4 text-lg font-semibold">訓練生管理</h1>
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <h1 className="mb-5 text-ios-title1">訓練生管理</h1>
 
-      <div className="mb-4 rounded-card border border-black/10 bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold">CSV一括登録</h2>
+      <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+        <h2 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          CSV一括登録
+        </h2>
         <input
           ref={fileInputRef}
           type="file"
           accept=".csv"
           onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-          className="mb-2 text-sm"
+          className="mb-2 text-ios-footnote text-label-secondary file:mr-3 file:min-h-[36px] file:rounded-full file:border-0 file:bg-primary/10 file:px-3.5 file:text-ios-footnote file:font-semibold file:text-primary"
         />
         {csvWarnings.length > 0 && (
-          <ul className="mb-2 text-xs text-risk-high">
+          <ul className="mb-2 list-inside list-disc text-ios-footnote text-risk-high">
             {csvWarnings.map((w, i) => (
               <li key={i}>{w}</li>
             ))}
           </ul>
         )}
         {csvPreview && (
-          <div>
-            <p className="mb-2 text-sm text-label-secondary">
+          <div className="mt-2">
+            <p className="mb-2 text-ios-subhead text-label-secondary">
               {csvPreview.length}件をプレビュー中
             </p>
             <PrimaryButton
@@ -222,32 +224,34 @@ function StudentsPageContent() {
         )}
       </div>
 
-      <div className="mb-4 rounded-card border border-black/10 bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold">出席番号を範囲で一括登録</h2>
-        <p className="mb-2 text-xs text-label-secondary">
+      <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+        <h2 className="mb-1 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          出席番号を範囲で一括登録
+        </h2>
+        <p className="mb-3 text-ios-footnote text-label-secondary">
           例：1〜40番までを同じ班名で一度に登録できます
         </p>
         <div className="flex flex-wrap items-center gap-2">
           <input
             type="number"
-            placeholder="開始番号（例：1）"
+            placeholder="開始番号"
             value={rangeStart}
             onChange={(e) => {
               setRangeStart(e.target.value);
               setRangeError(null);
             }}
-            className="min-h-[44px] w-36 rounded-card border border-black/10 bg-surface px-3"
+            className="min-h-[46px] w-28 rounded-[12px] border border-transparent bg-background px-3.5 text-ios-subhead text-label outline-none focus:border-primary"
           />
           <span className="text-label-secondary">〜</span>
           <input
             type="number"
-            placeholder="終了番号（例：40）"
+            placeholder="終了番号"
             value={rangeEnd}
             onChange={(e) => {
               setRangeEnd(e.target.value);
               setRangeError(null);
             }}
-            className="min-h-[44px] w-36 rounded-card border border-black/10 bg-surface px-3"
+            className="min-h-[46px] w-28 rounded-[12px] border border-transparent bg-background px-3.5 text-ios-subhead text-label outline-none focus:border-primary"
           />
           <input
             type="text"
@@ -257,15 +261,17 @@ function StudentsPageContent() {
               setRangeGroup(e.target.value);
               setRangeError(null);
             }}
-            className="min-h-[44px] w-32 rounded-card border border-black/10 bg-surface px-3"
+            className="min-h-[46px] w-24 rounded-[12px] border border-transparent bg-background px-3.5 text-ios-subhead text-label outline-none focus:border-primary"
           />
           <PrimaryButton label="一括登録" onPress={handleRangeAdd} isLoading={isRangeAdding} />
         </div>
-        {rangeError && <p className="mt-2 text-sm text-risk-high">{rangeError}</p>}
+        {rangeError && <p className="mt-2 text-ios-footnote text-risk-high">{rangeError}</p>}
       </div>
 
-      <div className="mb-4 rounded-card border border-black/10 bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold">手動追加</h2>
+      <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+        <h2 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          手動追加
+        </h2>
         <div className="flex flex-wrap gap-2">
           <input
             type="number"
@@ -275,7 +281,7 @@ function StudentsPageContent() {
               setManualNumber(e.target.value);
               setManualError(null);
             }}
-            className="min-h-[44px] w-32 rounded-card border border-black/10 bg-surface px-3"
+            className="min-h-[46px] w-28 rounded-[12px] border border-transparent bg-background px-3.5 text-ios-subhead text-label outline-none focus:border-primary"
           />
           <input
             type="text"
@@ -285,51 +291,60 @@ function StudentsPageContent() {
               setManualGroup(e.target.value);
               setManualError(null);
             }}
-            className="min-h-[44px] w-32 rounded-card border border-black/10 bg-surface px-3"
+            className="min-h-[46px] w-28 rounded-[12px] border border-transparent bg-background px-3.5 text-ios-subhead text-label outline-none focus:border-primary"
           />
           <PrimaryButton label="追加" onPress={handleManualAdd} />
         </div>
-        {manualError && <p className="mt-2 text-sm text-risk-high">{manualError}</p>}
+        {manualError && <p className="mt-2 text-ios-footnote text-risk-high">{manualError}</p>}
       </div>
 
       {isLoading ? (
         <Skeleton shape="card" />
       ) : students.length === 0 ? (
-        <p className="text-label-secondary">
-          CSVをアップロードするか手動で追加してください
-        </p>
+        <div className="rounded-[18px] bg-surface px-5 py-8 text-center shadow-card">
+          <p className="text-ios-body text-label-secondary">
+            CSVをアップロードするか手動で追加してください
+          </p>
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-label-secondary">
-                <th className="px-2 py-1">出席番号</th>
-                <th className="px-2 py-1">班</th>
-                <th className="px-2 py-1">状態</th>
-                <th className="px-2 py-1" />
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((s) => (
-                <tr key={s.id} className="border-t border-black/10">
-                  <td className="px-2 py-2">{s.attendanceNumber}</td>
-                  <td className="px-2 py-2">{s.groupName}</td>
-                  <td className="px-2 py-2">{s.isActive ? "有効" : "無効"}</td>
-                  <td className="px-2 py-2">
-                    {s.isActive && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeactivate(s)}
-                        className="min-h-[44px] text-risk-high"
-                      >
-                        無効化
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="overflow-hidden rounded-[18px] bg-surface shadow-card">
+          <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 border-b border-black/[0.06] px-4 py-2.5 text-ios-caption font-semibold uppercase tracking-wide text-label-secondary">
+            <span>出席番号</span>
+            <span>班</span>
+            <span>状態</span>
+            <span />
+          </div>
+          {students.map((s, i) => (
+            <div
+              key={s.id}
+              className={[
+                "grid grid-cols-[1fr_1fr_auto_auto] items-center gap-2 px-4 py-3",
+                i !== students.length - 1 ? "border-b border-black/[0.06]" : "",
+              ].join(" ")}
+            >
+              <span className="text-ios-body tabular-nums text-label">{s.attendanceNumber}番</span>
+              <span className="truncate text-ios-body text-label-secondary">{s.groupName}</span>
+              <span
+                className={[
+                  "justify-self-start rounded-full px-2.5 py-0.5 text-ios-caption font-semibold",
+                  s.isActive ? "bg-success/15 text-success" : "bg-black/[0.06] text-label-secondary",
+                ].join(" ")}
+              >
+                {s.isActive ? "有効" : "無効"}
+              </span>
+              {s.isActive ? (
+                <button
+                  type="button"
+                  onClick={() => handleDeactivate(s)}
+                  className="min-h-[36px] justify-self-end text-ios-footnote font-semibold text-risk-high"
+                >
+                  無効化
+                </button>
+              ) : (
+                <span />
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

@@ -55,29 +55,34 @@ function PdfPageContent() {
   };
 
   if (!year) {
-    return <p className="p-4 text-label-secondary">年度が設定されていません</p>;
+    return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
 
   return (
-    <div className="p-4">
-      <h1 className="mb-4 text-lg font-semibold">PDF出力</h1>
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <h1 className="mb-5 text-ios-title1">PDF出力</h1>
 
-      <div className="rounded-card border border-black/10 bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold">記録一覧（日時・作業内容・危険項目）</h2>
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="rounded-[18px] bg-surface p-5 shadow-card">
+        <h2 className="mb-1 text-ios-headline text-label">記録一覧</h2>
+        <p className="mb-4 text-ios-footnote text-label-secondary">
+          日時・作業内容・危険項目をそのまま一覧化します
+        </p>
+        <div className="flex flex-wrap items-center gap-2.5">
           <input
             type="date"
             value={periodStart}
             onChange={(e) => setPeriodStart(e.target.value)}
-            className="min-h-[44px] rounded-card border border-black/10 bg-surface px-3"
+            className="min-h-[46px] rounded-[12px] border border-transparent bg-background px-3.5 text-ios-subhead text-label outline-none focus:border-primary"
           />
           <span className="text-label-secondary">〜</span>
           <input
             type="date"
             value={periodEnd}
             onChange={(e) => setPeriodEnd(e.target.value)}
-            className="min-h-[44px] rounded-card border border-black/10 bg-surface px-3"
+            className="min-h-[46px] rounded-[12px] border border-transparent bg-background px-3.5 text-ios-subhead text-label outline-none focus:border-primary"
           />
+        </div>
+        <div className="mt-3">
           <PrimaryButton
             label="記録一覧PDFを出力"
             onPress={handleGenerate}
@@ -85,16 +90,16 @@ function PdfPageContent() {
           />
         </div>
         {pdfUrl && (
-          <div className="mt-4">
+          <div className="mt-4 animate-fadeIn">
             <iframe
               src={pdfUrl}
-              className="h-[70vh] w-full rounded-card border border-black/10 bg-white"
+              className="h-[70vh] w-full rounded-[14px] bg-white shadow-card"
               title="記録一覧PDFプレビュー"
             />
             <a
               href={pdfUrl}
               download="hiyari-hatto-list.pdf"
-              className="mt-2 inline-block min-h-[44px] rounded-card bg-primary px-4 py-2 text-white"
+              className="mt-3 inline-flex min-h-[44px] items-center rounded-[14px] bg-primary px-5 text-ios-headline text-white shadow-button"
             >
               ダウンロード
             </a>

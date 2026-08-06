@@ -112,7 +112,7 @@ function DashboardContent() {
   }, [reports, students, tasks, riskItems]);
 
   if (!year) {
-    return <p className="p-4 text-label-secondary">年度が設定されていません</p>;
+    return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
 
   if (isLoading) {

@@ -135,46 +135,49 @@ function RiskItemsPageContent() {
   };
 
   if (!year) {
-    return <p className="p-4 text-label-secondary">年度が設定されていません</p>;
+    return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
 
   return (
-    <div className="p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-lg font-semibold">危険項目管理</h1>
-        <PrimaryButton label="追加" onPress={openCreate} />
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <div className="mb-5 flex items-center justify-between">
+        <h1 className="text-ios-title1">危険項目管理</h1>
+        <PrimaryButton label="＋ 追加" onPress={openCreate} />
       </div>
 
       {isLoading ? (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <Skeleton shape="text" />
           <Skeleton shape="text" />
         </div>
       ) : riskItems.length === 0 ? (
-        <p className="text-label-secondary">まだ危険項目が登録されていません</p>
+        <div className="rounded-[18px] bg-surface px-5 py-8 text-center shadow-card">
+          <p className="text-ios-body text-label-secondary">まだ危険項目が登録されていません</p>
+        </div>
       ) : (
-        <div className="space-y-2">
-          {riskItems.map((item) => (
+        <div className="overflow-hidden rounded-[18px] bg-surface shadow-card">
+          {riskItems.map((item, i) => (
             <div
               key={item.id}
-              className="flex items-center justify-between rounded-card border border-black/10 bg-surface px-4 py-3"
+              className={[
+                "flex items-center justify-between gap-3 px-4 py-3.5",
+                i !== riskItems.length - 1 ? "border-b border-black/[0.06]" : "",
+              ].join(" ")}
             >
-              <div>
-                <p className={item.isActive ? "" : "text-label-secondary line-through"}>
-                  {item.name}
-                  {item.isSystemItem && (
-                    <span className="ml-2 text-xs text-label-secondary">
-                      （システム項目）
-                    </span>
-                  )}
-                </p>
-              </div>
+              <p className={["truncate text-ios-body", item.isActive ? "text-label" : "text-label-secondary line-through"].join(" ")}>
+                {item.name}
+                {item.isSystemItem && (
+                  <span className="ml-2 rounded-full bg-black/[0.05] px-2 py-0.5 text-ios-caption text-label-secondary">
+                    システム項目
+                  </span>
+                )}
+              </p>
               {!item.isSystemItem && (
-                <div className="flex gap-2">
+                <div className="flex shrink-0 gap-3">
                   <button
                     type="button"
                     onClick={() => openEdit(item)}
-                    className="min-h-[44px] px-2 text-sm text-primary"
+                    className="min-h-[36px] text-ios-footnote font-semibold text-primary"
                   >
                     編集
                   </button>
@@ -182,7 +185,7 @@ function RiskItemsPageContent() {
                     <button
                       type="button"
                       onClick={() => handleDeactivate(item)}
-                      className="min-h-[44px] px-2 text-sm text-risk-high"
+                      className="min-h-[36px] text-ios-footnote font-semibold text-risk-high"
                     >
                       無効化
                     </button>
@@ -199,7 +202,9 @@ function RiskItemsPageContent() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       >
-        <label className="mb-1 block text-sm text-label-secondary">名称</label>
+        <label className="mb-1.5 block text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          名称
+        </label>
         <input
           type="text"
           value={name}
@@ -209,13 +214,13 @@ function RiskItemsPageContent() {
             setNameError(null);
           }}
           className={[
-            "mb-1 min-h-[44px] w-full rounded-card border bg-surface px-4",
-            nameError ? "border-risk-high" : "border-black/10",
+            "mb-1.5 min-h-[46px] w-full rounded-[12px] border bg-background px-4 text-ios-body text-label outline-none",
+            nameError ? "border-risk-high" : "border-transparent focus:border-primary",
           ].join(" ")}
         />
-        {nameError && <p className="mb-2 text-sm text-risk-high">{nameError}</p>}
+        {nameError && <p className="mb-2 text-ios-footnote text-risk-high">{nameError}</p>}
 
-        <label className="mb-1 mt-3 block text-sm text-label-secondary">
+        <label className="mb-2 mt-4 block text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
           紐づく作業内容
         </label>
         <div className="flex flex-wrap gap-2">
@@ -231,10 +236,10 @@ function RiskItemsPageContent() {
                 )
               }
               className={[
-                "min-h-[44px] rounded-card border px-3 py-2 text-sm",
+                "min-h-[40px] rounded-full border px-3.5 py-1.5 text-ios-footnote transition-all duration-150",
                 selectedTaskIds.includes(t.id)
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-black/10 bg-surface text-label",
+                  ? "border-primary bg-primary text-white"
+                  : "border-black/[0.08] bg-background text-label",
               ].join(" ")}
             >
               {t.name}
@@ -242,7 +247,7 @@ function RiskItemsPageContent() {
           ))}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-5">
           <PrimaryButton label="保存" onPress={handleSave} isLoading={isSaving} />
         </div>
       </Modal>

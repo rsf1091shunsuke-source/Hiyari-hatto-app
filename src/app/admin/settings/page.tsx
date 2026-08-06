@@ -87,26 +87,30 @@ function SettingsPageContent() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="mb-4 text-lg font-semibold">設定</h1>
+    <div className="mx-auto max-w-2xl px-5 py-6">
+      <h1 className="mb-6 text-ios-title1">設定</h1>
 
-      <div className="mb-6 rounded-card border border-black/10 bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold">年度一覧</h2>
-        <div className="space-y-2">
+      <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+        <h2 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          年度一覧
+        </h2>
+        <div className="space-y-2.5">
           {years.map((y) => (
-            <div
-              key={y.id}
-              className="rounded-card border border-black/10 px-3 py-2"
-            >
-              <div className="flex items-center justify-between">
-                <span>
-                  {y.name} {y.isActive && <span className="text-primary">（現行）</span>}
+            <div key={y.id} className="rounded-[14px] bg-background px-4 py-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ios-body text-label">
+                  {y.name}{" "}
+                  {y.isActive && (
+                    <span className="ml-1 rounded-full bg-success/15 px-2 py-0.5 text-ios-caption font-semibold text-success">
+                      現行
+                    </span>
+                  )}
                 </span>
                 {!y.isActive && (
                   <button
                     type="button"
                     onClick={() => handleSwitchYear(y.id)}
-                    className="min-h-[44px] text-sm text-primary"
+                    className="min-h-[36px] shrink-0 text-ios-footnote font-semibold text-primary"
                   >
                     この年度に切替
                   </button>
@@ -115,7 +119,7 @@ function SettingsPageContent() {
               <button
                 type="button"
                 onClick={() => handleCopyInputUrl(y)}
-                className="mt-1 min-h-[36px] text-xs text-primary underline"
+                className="mt-1.5 min-h-[32px] text-ios-caption text-primary"
               >
                 この年度の訓練生用URLをコピー
               </button>
@@ -124,8 +128,10 @@ function SettingsPageContent() {
         </div>
       </div>
 
-      <div className="mb-6 rounded-card border border-black/10 bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold">新年度を作成</h2>
+      <div className="mb-4 rounded-[18px] bg-surface p-5 shadow-card">
+        <h2 className="mb-3 text-ios-footnote font-semibold uppercase tracking-wide text-label-secondary">
+          新年度を作成
+        </h2>
         <input
           type="text"
           placeholder="年度名（例：2027年度）"
@@ -134,15 +140,15 @@ function SettingsPageContent() {
             setNewYearName(e.target.value);
             setNameError(null);
           }}
-          className="mb-2 min-h-[44px] w-full rounded-card border border-black/10 bg-surface px-3"
+          className="mb-2.5 min-h-[46px] w-full rounded-[12px] border border-transparent bg-background px-4 text-ios-body text-label outline-none focus:border-primary"
         />
         <input
           type="date"
           value={newYearStartDate}
           onChange={(e) => setNewYearStartDate(e.target.value)}
-          className="mb-2 min-h-[44px] w-full rounded-card border border-black/10 bg-surface px-3"
+          className="mb-3 min-h-[46px] w-full rounded-[12px] border border-transparent bg-background px-4 text-ios-body text-label outline-none focus:border-primary"
         />
-        {nameError && <p className="mb-2 text-sm text-risk-high">{nameError}</p>}
+        {nameError && <p className="mb-3 text-ios-footnote text-risk-high">{nameError}</p>}
         <PrimaryButton label="新年度を作成" onPress={handleCreateYear} isLoading={isCreating} />
       </div>
 
