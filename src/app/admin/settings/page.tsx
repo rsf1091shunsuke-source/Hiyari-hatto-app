@@ -76,6 +76,16 @@ function SettingsPageContent() {
     router.push("/admin/login");
   };
 
+  const handleCopyInputUrl = async (y: Year) => {
+    const url = `${window.location.origin}/input?yearId=${y.id}&token=${y.accessToken}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast("訓練生用URLをコピーしました", "success");
+    } catch {
+      showToast("コピーに失敗しました。手動でURLをご確認ください：" + url, "error");
+    }
+  };
+
   return (
     <div className="p-4">
       <h1 className="mb-4 text-lg font-semibold">設定</h1>
@@ -86,20 +96,29 @@ function SettingsPageContent() {
           {years.map((y) => (
             <div
               key={y.id}
-              className="flex items-center justify-between rounded-card border border-black/10 px-3 py-2"
+              className="rounded-card border border-black/10 px-3 py-2"
             >
-              <span>
-                {y.name} {y.isActive && <span className="text-primary">（現行）</span>}
-              </span>
-              {!y.isActive && (
-                <button
-                  type="button"
-                  onClick={() => handleSwitchYear(y.id)}
-                  className="min-h-[44px] text-sm text-primary"
-                >
-                  この年度に切替
-                </button>
-              )}
+              <div className="flex items-center justify-between">
+                <span>
+                  {y.name} {y.isActive && <span className="text-primary">（現行）</span>}
+                </span>
+                {!y.isActive && (
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchYear(y.id)}
+                    className="min-h-[44px] text-sm text-primary"
+                  >
+                    この年度に切替
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopyInputUrl(y)}
+                className="mt-1 min-h-[36px] text-xs text-primary underline"
+              >
+                この年度の訓練生用URLをコピー
+              </button>
             </div>
           ))}
         </div>
