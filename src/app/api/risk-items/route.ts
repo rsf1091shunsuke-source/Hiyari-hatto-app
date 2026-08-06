@@ -34,7 +34,8 @@ export async function GET(req: NextRequest) {
     }));
 
     return Response.json({ items });
-  } catch {
+  } catch (err) {
+    console.error("[/api/risk-items] failed:", err);
     return apiError("VALIDATION_ERROR", "データの取得に失敗しました", 500);
   }
 }
