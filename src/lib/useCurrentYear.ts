@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { query, where, onSnapshot, limit, orderBy } from "firebase/firestore";
+import { query, where, onSnapshot, limit } from "firebase/firestore";
 import { yearsCol } from "./collections";
 import { Year } from "@/types/firestore";
 
@@ -10,14 +10,21 @@ export function useCurrentYear() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // isActive:trueが複数存在する状態（データ不整合）でも、orderByが無いと
-    // Firestoreがどれを返すかは不定で、アクセスのたびに違う年度に切り替わりうる。
-    // startDateが最も新しいものを常に選ぶことで、少なくとも挙動を安定させる。
-    const q = query(yearsCol, where("isActive", "==", true), orderBy("startDate", "desc"), limit(1));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setYear(snapshot.empty ? null : snapshot.docs[0].data());
-      setIsLoading(false);
-    });
+    // 「設定」画面の年度切替（この年度に切替）が、対象以外の年度のisActiveを
+    // 必ずfalseにする実装になっているため、原則isActive:trueは常に1件のみになる。
+    // orderByを組み合わせると複合索引が必要になり未作成だと取得自体が失敗するため、
+    // 単純な等価条件のみで取得する（索引不要・より壊れにくい構成）。
+    const q = query(yearsCol, where("isActive", "==", true), limit(1));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        setYear(snapshot.empty ? null : snapshot.docs[0].data());
+        setIsLoading(false);
+      },
+      () => {
+        setIsLoading(false);
+      }
+    );
     return unsubscribe;
   }, []);
 
