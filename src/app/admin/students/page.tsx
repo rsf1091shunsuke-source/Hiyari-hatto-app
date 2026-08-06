@@ -184,6 +184,15 @@ function StudentsPageContent() {
     }
   };
 
+  const handleActivate = async (student: Student) => {
+    try {
+      await updateDoc(firestoreDoc(studentsCol, student.id), { isActive: true });
+      showToast("有効化しました", "success");
+    } catch {
+      showToast("有効化に失敗しました", "error");
+    }
+  };
+
   if (!year) {
     return <div className="mx-auto max-w-2xl px-5 py-10 text-center"><p className="text-ios-body text-label-secondary">年度が設定されていません</p></div>;
   }
@@ -341,7 +350,13 @@ function StudentsPageContent() {
                   無効化
                 </button>
               ) : (
-                <span />
+                <button
+                  type="button"
+                  onClick={() => handleActivate(s)}
+                  className="min-h-[36px] justify-self-end text-ios-footnote font-semibold text-primary"
+                >
+                  有効化
+                </button>
               )}
             </div>
           ))}
