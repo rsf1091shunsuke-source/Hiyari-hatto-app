@@ -28,8 +28,8 @@ const CIRCLED_DIGITS = [
 ];
 
 function cellColor(count: number): RGB | null {
-  if (count >= HIGH_THRESHOLD) return rgb(0.93, 0.35, 0.31); // 赤系（実物に近い濃さ）
-  if (count >= MID_THRESHOLD) return rgb(1, 0.88, 0.35); // 黄系
+  if (count > HIGH_THRESHOLD) return rgb(0.93, 0.35, 0.31); // 赤系（20件を超える）
+  if (count > MID_THRESHOLD) return rgb(1, 0.88, 0.35); // 黄系（5件を超える）
   return null;
 }
 
@@ -194,7 +194,8 @@ export async function generateMonthlyReportPdf(data: MonthlyReportPdfData): Prom
 
     let x = MARGIN + labelColWidth;
     row.counts.forEach((count) => {
-      const bg = cellColor(count);
+      // Excel C4:O4相当：危険項目ごとのセル色分けは「月合計」行のみに適用する
+      const bg = row.isSummaryRow ? cellColor(count) : null;
       page.drawRectangle({
         x,
         y: rowTop - rowHeight,
@@ -216,6 +217,7 @@ export async function generateMonthlyReportPdf(data: MonthlyReportPdfData): Prom
       x += riskColWidth;
     });
 
+    // 件数（合計）列は行の種類にかかわらず毎回、値に応じて色分けする
     const totalBg = cellColor(row.total);
     page.drawRectangle({
       x,
@@ -278,7 +280,7 @@ export async function generateMonthlyReportPdf(data: MonthlyReportPdfData): Prom
     });
   }
 
-  drawBox(hiyariX, "今週のヒヤリハット", data.hiyariHattoItems, rgb(0.82, 0.22, 0.2));
+  drawBox(hiyariX, "今月のヒヤリハット", data.hiyariHattoItems, rgb(0.82, 0.22, 0.2));
   drawBox(taisakuX, "対策", data.countermeasures, rgb(0.55, 0.62, 0.25));
 
   return pdfDoc.save();
