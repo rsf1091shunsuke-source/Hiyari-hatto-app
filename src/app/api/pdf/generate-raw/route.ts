@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
         dateTimeLabel: r.createdAt.toDate().toLocaleString("ja-JP"),
         taskName,
         riskItemNames,
+        freeText: r.freeText ?? null,
       };
     });
 
